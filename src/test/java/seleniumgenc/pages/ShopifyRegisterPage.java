@@ -1,5 +1,7 @@
 package seleniumgenc.pages;
 
+import java.util.List;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -37,6 +39,14 @@ public class ShopifyRegisterPage {
 	public WebElement getCancelButton(){return driver.findElement(By.id("cancel"));}
 	
 	public WebElement getTable(){return driver.findElement(By.id("ttab"));}
+	
+	public List<WebElement> getTableRows(){return getTable().findElements(By.tagName("tr"));}
+	
+	public String getTableLastRowText(){
+		List<WebElement> rows = getTableRows();
+		return rows.get(rows.size()-1).getText();
+	}
+	
 	
 	public String getErrorMessages(){ return driver.findElement(By.id("errfn")).getText();}
 	

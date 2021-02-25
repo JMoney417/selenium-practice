@@ -1,5 +1,6 @@
 package seleniumgenc;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -22,6 +23,7 @@ import seleniumgenc.pages.ShopifyRegisterPageBuilder;
 public class SeleniumPracticeTekstacShopifyTests {
 
 	private ShopifyRegisterPageBuilder shopifyRegisterPageBuilder;
+	private String excelPath = System.getProperty("user.dir")+"/src/test/java/excelFiles/ShopifyTestData.xlsx";
 	private WebDriver driver;
 	
 	@BeforeTest
@@ -58,12 +60,8 @@ public class SeleniumPracticeTekstacShopifyTests {
 		
 		page.clickRegisterButton();
 		
-		//find table and view rows
-		WebElement table = page.getTable();
-		List<WebElement> rows = table.findElements(By.tagName("tr"));
-		
 		String expected = "Jason Monroe JMoney Coimbatore";
-		String actual = rows.get(rows.size()-1).getText();
+		String actual = page.getTableLastRowText();
 		Assert.assertEquals(actual, expected);
 	}
 	
@@ -86,6 +84,12 @@ public class SeleniumPracticeTekstacShopifyTests {
 		
 	}
 	
+	@Test
+	public void testingApachePOIExcel() throws IOException{
+		List<ShopifyFormData> data = ShopifyExcelUtils.readShopifyFormDataFromExcel(excelPath);
+		
+		Assert.assertEquals(data.get(0).getFirstName(), "");
+	}
 	
 	@AfterMethod
 	public void afterTest(){

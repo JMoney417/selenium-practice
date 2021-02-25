@@ -6,9 +6,8 @@
       <class name="seleniumgenc.SeleniumPracticeTekstacShopifyTests">
         <methods>
           <include name="afterTest"/>
-          <include name="submittingFormAddsInfoToBottomTable"/>
           <include name="beforeTest"/>
-          <include name="incomplete_form_issues_error"/>
+          <include name="testingApachePOIExcel"/>
           <include name="beforeMethod"/>
         </methods>
       </class> <!-- seleniumgenc.SeleniumPracticeTekstacShopifyTests -->
