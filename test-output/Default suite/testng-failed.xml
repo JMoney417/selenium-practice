@@ -7,6 +7,7 @@
         <methods>
           <include name="afterTest"/>
           <include name="beforeTest"/>
+          <include name="incomplete_form_issues_error" invocation-numbers="4"/>
           <include name="testingApachePOIExcel"/>
           <include name="beforeMethod"/>
         </methods>

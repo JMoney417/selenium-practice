@@ -15,16 +15,14 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ShopifyExcelUtils {
-	
-	public static final String DATA_SHEET = "Data";
-	
-	public static List<ShopifyFormData> readShopifyFormDataFromExcel(String excelFilePath) throws IOException{
+		
+	public static List<ShopifyFormData> readShopifyFormDataFromExcel(String excelFilePath, String sheetName) throws IOException{
 		List<ShopifyFormData> listShopifyFormData = new ArrayList<ShopifyFormData>();
 		FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
 		
 		//Apache POI
 		Workbook workbook = new XSSFWorkbook(inputStream);
-		Sheet firstSheet = workbook.getSheet(DATA_SHEET);
+		Sheet firstSheet = workbook.getSheet(sheetName);
 		Iterator<Row> iterator = firstSheet.iterator();
 		
 		while(iterator.hasNext()){

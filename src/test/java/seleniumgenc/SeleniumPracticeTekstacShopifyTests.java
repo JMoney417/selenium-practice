@@ -12,6 +12,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -24,6 +25,8 @@ public class SeleniumPracticeTekstacShopifyTests {
 
 	private ShopifyRegisterPageBuilder shopifyRegisterPageBuilder;
 	private String excelPath = System.getProperty("user.dir")+"/src/test/java/excelFiles/ShopifyTestData.xlsx";
+	public static final String HAPPY_PATH_SHEET = "allFields";
+	public static final String MISSING_FIELDS_SHEET = "missingFields";
 	private WebDriver driver;
 	
 	@BeforeTest
@@ -36,6 +39,25 @@ public class SeleniumPracticeTekstacShopifyTests {
 		shopifyRegisterPageBuilder = new ShopifyRegisterPageBuilder(new ShopifyRegisterPage(new ChromeDriver()));
 	}
 	
+	@DataProvider(name="happyPath")
+	public Object[][] happyPathData() throws IOException{
+		Object[][] data = ShopifyExcelUtils.readShopifyFormDataFromExcel(excelPath, HAPPY_PATH_SHEET).stream()
+				.map(formData -> new Object[]{formData.getFirstName(), formData.getLastName(), formData.getUserName(),
+						formData.getCity().toString(), formData.getGender().toString(), formData.getPassword(),
+						formData.getTableText(), formData.getErrorMessage()}).toArray(Object[][]::new);
+		return data;
+	}
+	
+	@DataProvider(name="missingFields")
+	public Object[][] missingFieldsData() throws IOException{
+		Object[][] data = ShopifyExcelUtils.readShopifyFormDataFromExcel(excelPath, MISSING_FIELDS_SHEET).stream()
+				.map(formData -> new Object[]{formData.getFirstName(), formData.getLastName(), formData.getUserName(),
+						formData.getCity().toString(), formData.getGender().toString(), formData.getPassword(),
+						formData.getTableText(), formData.getErrorMessage()}).toArray(Object[][]::new);
+		return data;
+	}
+	
+	
 	@Test
 	public void shopifyRegisterFormContainsAllTextboxes(){
 		
@@ -46,50 +68,49 @@ public class SeleniumPracticeTekstacShopifyTests {
 		
 	}
 	
-	@Test
-	public void submittingFormAddsInfoToBottomTable(){
+	@Test(dataProvider = "happyPath")
+	public void submittingFormAddsInfoToBottomTable(String firstName, String lastName, String userName,
+												   String city, String gender, String password, 
+												   String tableText, String errorMessage){
 		
 		//Arrange/Act
 		ShopifyRegisterPage page = shopifyRegisterPageBuilder
-				.withFirstName("Jason")
-				.withLastName("Monroe")
-				.withUserName("JMoney")
-				.withCity(City.valueOf("Coimbatore"))
-				.withGender(Gender.valueOf("Male"))
-				.withPassword("password-1").build();
+				.withFirstName(firstName)
+				.withLastName(lastName)
+				.withUserName(userName)
+				.withCity(City.valueOf(city))
+				.withGender(Gender.valueOf(gender))
+				.withPassword(password).build();
 		
 		page.clickRegisterButton();
 		
-		String expected = "Jason Monroe JMoney Coimbatore";
+		String expected = tableText;
 		String actual = page.getTableLastRowText();
 		Assert.assertEquals(actual, expected);
 	}
 	
-	@Test
-	public void incomplete_form_issues_error(){
+	@Test(dataProvider = "missingFields")
+	public void incomplete_form_issues_error(String firstName, String lastName, String userName,
+			   								String city, String gender, String password, 
+			   								String tableText, String errorMessage){
 		
 		//Arrange/Act
 		ShopifyRegisterPage page = shopifyRegisterPageBuilder
-				.withFirstName("Jason")
-				.withLastName("Monroe")
-				.withUserName("JMoney")
-				.withCity(City.valueOf("Coimbatore"))
-				.withGender(Gender.valueOf("Male")).build();
+				.withFirstName(firstName)
+				.withLastName(lastName)
+				.withUserName(userName)
+				.withCity(City.valueOf(city))
+				.withGender(Gender.valueOf(gender))
+				.withPassword(password).build();
 		
 		page.clickRegisterButton();
 		
-		String expectedError = "Passwd can't be blank";
+		String expectedError = errorMessage;
 		String actualError = page.getErrorMessages();
 		Assert.assertEquals(actualError, expectedError);
 		
 	}
 	
-	@Test
-	public void testingApachePOIExcel() throws IOException{
-		List<ShopifyFormData> data = ShopifyExcelUtils.readShopifyFormDataFromExcel(excelPath);
-		
-		Assert.assertEquals(data.get(0).getFirstName(), "");
-	}
 	
 	@AfterMethod
 	public void afterTest(){
